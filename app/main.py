@@ -2,8 +2,10 @@ from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db.database import get_db
+from app.api.auth import authRouter
 
 app = FastAPI()
+app.include_router(authRouter, tags=["auth"], prefix="/auth")
 
 
 @app.get('/')
