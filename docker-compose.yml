@@ -1,0 +1,49 @@
+services:
+  em-database:
+    image: postgres:17
+    container_name: em-database
+    environment:
+      POSTGRES_DB: db_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1111
+    ports:
+      - "5438:5432"
+    volumes:
+      - em_db_data:/var/lib/postgresql/data
+    networks:
+      - em-network
+
+  # alembic:
+  #   build: .
+  #   container_name: em-task-migrations
+  #   depends_on:
+  #     - em-database
+  #   env_file: ./.env
+  #   environment:
+  #     DB_HOST: em-database
+  #     DB_PORT: 5432
+  #   networks:
+  #     - em-network
+  #   command: alembic upgrade head
+
+  app:
+    build:
+      dockerfile: Dockerfile
+    container_name: em-task-container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - em-database
+    env_file: ./.env
+    environment:
+      DB_HOST: em-database
+      DB_PORT: 5432
+    networks:
+      - em-network
+
+volumes:
+  em_db_data:
+
+networks:
+  em-network:
+    driver: bridge
