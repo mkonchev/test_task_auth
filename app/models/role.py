@@ -39,5 +39,5 @@ class Role(Base):
         "User",
         secondary=user_role_association,
         back_populates="role",
-        cascade="all, delete-orphan"
+        lazy="selectin"
     )

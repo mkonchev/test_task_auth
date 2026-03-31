@@ -1,16 +1,17 @@
 from fastapi import APIRouter
+from app.schemas import user as user_schema
 
 authRouter = APIRouter()
 
 
 @authRouter.post("/register")
-async def register():
-    return {"data": "register"}
+async def register(user_data: user_schema.UserCreate):
+    return {"data": user_schema.UserResponse}
 
 
 @authRouter.post("/login")
-async def login():
-    return {"data": "login"}
+async def login(user_data: user_schema.UserLogin):
+    return {"data": f"User {user_data.email} login successfully"}
 
 
 @authRouter.post("/logout")
