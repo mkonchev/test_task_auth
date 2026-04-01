@@ -2,9 +2,10 @@ from typing import TYPE_CHECKING
 from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.db.database import Base
+from app.models.role import user_role_association
 
 if TYPE_CHECKING:
-    from app.models.role import Role, user_role_association # noqa
+    from app.models.role import Role
 
 
 class User(Base):
@@ -22,15 +23,15 @@ class User(Base):
     email: Mapped[str] = mapped_column(
         String(200),
         nullable=False,
-        autoincrement=True,
-        unique=True
+        unique=True,
+        index=True
     )
     password: Mapped[str] = mapped_column(String(200))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    role: Mapped["Role"] = relationship(
+    roles: Mapped["Role"] = relationship(
         "Role",
-        secondary="user_role_association",
+        secondary=user_role_association,
         back_populates="users",
         lazy="selectin"
     )

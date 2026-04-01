@@ -33,11 +33,11 @@ class Role(Base):
         autoincrement=True,
         nullable=False
     )
-    name: Mapped[str] = mapped_column(String(200))
+    name: Mapped[str] = mapped_column(String(200), unique=True)
 
     users: Mapped[list["User"]] = relationship(
         "User",
         secondary=user_role_association,
-        back_populates="role",
+        back_populates="roles",
         lazy="selectin"
     )

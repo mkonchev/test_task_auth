@@ -10,6 +10,9 @@ class Settings(BaseSettings):
     DB_NAME: str = "db_auth"
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "1111"
+    JWT_SECRET: str = "secret-key"
+    JWT_ALGORITHM: str = "HS256"
+    EXP_AT: int = 900
 
 
 settings = Settings()
