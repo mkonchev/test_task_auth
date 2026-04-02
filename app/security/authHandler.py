@@ -8,9 +8,11 @@ class AuthHandler(object):
 
     @staticmethod
     async def sign_jwt(user_id: int):
+        exp_timestamp = datetime.now().timestamp() + settings.EXP_AT
+        expire = datetime.fromtimestamp(exp_timestamp)
         payload = {
             "user_id": user_id,
-            "exp": datetime.now() + settings.EXP_AT
+            "exp": expire
         }
 
         token = jwt.encode(
@@ -26,10 +28,11 @@ class AuthHandler(object):
             decoded_token = jwt.decode(
                 token,
                 settings.JWT_SECRET,
-                algorithm=settings.JWT_ALGORITHM
+                algorithms=[settings.JWT_ALGORITHM]
             )
-            if decoded_token["exp"] >= datetime.now().timestamp():
-                return decoded_token
-            return None
+            exp = decoded_token.get("exp")
+            if exp and datetime.now().timestamp() > exp:
+                return None
+            return decoded_token
         except Exception as e:
             raise JWTError(detail=f"Auth failed: {str(e)}")

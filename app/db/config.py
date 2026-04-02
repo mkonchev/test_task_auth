@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     JWT_SECRET: str = "secret-key"
     JWT_ALGORITHM: str = "HS256"
     EXP_AT: int = 900
+    ADMIN_PW: str = "12345"
+    ADMIN_EMAIL: str = "test@example.com"
 
 
 settings = Settings()
@@ -20,4 +22,4 @@ settings = Settings()
 
 def get_db_url():
     return (f"postgresql+asyncpg://{settings.DB_USER}:{settings.DB_PASSWORD}@"
-            f"localhost:{settings.DB_PORT}/{settings.DB_NAME}")
+            f"{settings.DB_HOST}:{settings.DB_PORT}/{settings.DB_NAME}")

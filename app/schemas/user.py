@@ -1,4 +1,5 @@
-from pydantic import BaseModel, EmailStr, field_validator
+from pydantic import BaseModel, EmailStr, field_validator, ConfigDict
+from app.schemas.role import RoleResponse
 
 
 class UserCreate(BaseModel):
@@ -36,6 +37,10 @@ class UserResponse(BaseModel):
     first_name: str
     last_name: str
     email: EmailStr
+    is_active: bool
+    roles: list[RoleResponse] = []
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserUpdate(BaseModel):

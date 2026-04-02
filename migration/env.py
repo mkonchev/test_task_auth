@@ -7,6 +7,8 @@ from alembic import context
 from app.db.database import Base, DATABASE_URL
 from app.models.user import User
 from app.models.role import Role
+from app.models.access_rule import AccessRule
+from app.models.business_element import BusinessElement
 
 config = context.config
 config.set_main_option("sqlalchemy.url", DATABASE_URL)

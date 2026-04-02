@@ -1,10 +1,27 @@
 from fastapi import FastAPI, Depends, HTTPException
+from contextlib import asynccontextmanager
 from sqlalchemy import text
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.database import get_db
+# from sqlalchemy.ext.asyncio import AsyncSession
+from app.db.database import get_db, engine, SessionLocal, Base
 from app.api.auth import authRouter
+from app.services.initService import InitService
 
-app = FastAPI()
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    async with SessionLocal() as db:
+        init_service = InitService(db)
+        await init_service.init_all()
+
+    yield
+    await engine.dispose()
+
+
+app = FastAPI(lifespan=lifespan)
+
 app.include_router(authRouter, tags=["auth"], prefix="/auth")
 
 

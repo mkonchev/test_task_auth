@@ -1,13 +1,16 @@
+from sqlalchemy.ext.asyncio import AsyncSession
 from app.repositories.userRepository import UserRepo
+from app.repositories.roleRepository import RoleRepo
 from app.schemas import user as user_schema
 from app.security.authHandler import AuthHandler
 from app.security.hashHelper import HashHelper
-from sqlalchemy.ext.asyncio import AsyncSession
 
 
 class UserService:
     def __init__(self, db: AsyncSession):
+        self.db = db
         self.__userRepository = UserRepo(db=db)
+        self.__roleRepository = RoleRepo(db=db)
 
     async def register(
         self,
@@ -19,6 +22,7 @@ class UserService:
             raise ValueError(
                 "User with this email already exists"
             )
+        default_role = await self.__roleRepository.get_or_create("user")
 
         user_dict = user_data.model_dump(exclude={'repeat_password'})
 
@@ -27,7 +31,12 @@ class UserService:
         )
         user_dict['password'] = hashed_password
 
-        return await self.__userRepository.create_user(user_dict)
+        user = await self.__userRepository.create_user_with_role(
+            user_dict,
+            default_role
+        )
+
+        return user_schema.UserResponse.model_validate(user)
 
     async def login(
         self,
@@ -59,10 +68,40 @@ class UserService:
 
         return token
 
+    async def get_user_by_id(self, user_id: int):
+        return await self.__userRepository.get_user_by_id(user_id)
+
     async def delete_user(self, user_id: int) -> None:
         user = await self.__userRepository.get_user_by_id(user_id)
         if not user:
             raise ValueError("User not found")
-        
+
         user.is_active = False
         await self.__userRepository.update_user(user)
+
+    async def update_user(
+        self,
+        user_id: int,
+        update_data: user_schema.UserUpdate
+    ) -> user_schema.UserResponse:
+        user = await self.__userRepository.get_user_by_id(user_id)
+        if not user:
+            raise ValueError(
+                "No such user"
+            )
+
+        update_user_dict = update_data.model_dump(
+            exclude_none=True,
+            exclude={'repeat_password'}
+        )
+
+        if 'password' in update_user_dict:
+            update_user_dict['password'] = await (
+                HashHelper.get_password_hash(update_user_dict['password'])
+            )
+
+        updated_user = await (
+            self.__userRepository.update_user(user_id, update_user_dict)
+        )
+
+        return user_schema.UserResponse.model_validate(updated_user)

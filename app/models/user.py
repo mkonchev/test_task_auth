@@ -29,7 +29,7 @@ class User(Base):
     password: Mapped[str] = mapped_column(String(200))
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
 
-    roles: Mapped["Role"] = relationship(
+    roles: Mapped[list["Role"]] = relationship(
         "Role",
         secondary=user_role_association,
         back_populates="users",

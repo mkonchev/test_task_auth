@@ -13,18 +13,18 @@ services:
     networks:
       - em-network
 
-  # alembic:
-  #   build: .
-  #   container_name: em-task-migrations
-  #   depends_on:
-  #     - em-database
-  #   env_file: ./.env
-  #   environment:
-  #     DB_HOST: em-database
-  #     DB_PORT: 5432
-  #   networks:
-  #     - em-network
-  #   command: alembic upgrade head
+  alembic:
+    build: .
+    container_name: em-task-migrations
+    depends_on:
+      - em-database
+    env_file: ./.env
+    environment:
+      DB_HOST: em-database
+      DB_PORT: 5432
+    networks:
+      - em-network
+    command: alembic upgrade head
 
   app:
     build:
