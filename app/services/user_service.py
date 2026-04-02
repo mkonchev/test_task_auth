@@ -1,9 +1,9 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.repositories.userRepository import UserRepo
-from app.repositories.roleRepository import RoleRepo
+from app.repositories.user_repository import UserRepo
+from app.repositories.role_repository import RoleRepo
 from app.schemas import user as user_schema
-from app.security.authHandler import AuthHandler
-from app.security.hashHelper import HashHelper
+from app.security.auth_handler import AuthHandler
+from app.security.hash_helper import HashHelper
 
 
 class UserService:

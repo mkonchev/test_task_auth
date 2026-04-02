@@ -4,7 +4,7 @@ from app.models.role import Role
 from app.models.business_element import BusinessElement
 from app.models.access_rule import AccessRule
 from app.models.user import User
-from app.security.hashHelper import HashHelper
+from app.security.hash_helper import HashHelper
 from app.db.config import settings
 
 
